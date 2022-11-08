@@ -15,12 +15,12 @@ import java.util.Set;
 
 public class ExcelFileWriter {
 
-    private String filepath;
+    private String filePath;
     private XSSFWorkbook workbook;
     private XSSFSheet spreadsheet;
 
-    public ExcelFileWriter(String filepath) {
-        this.filepath = filepath;
+    public ExcelFileWriter(String filePath) {
+        this.filePath = filePath;
         this.workbook = new XSSFWorkbook();
         this.spreadsheet = workbook.createSheet("Лист 1");
     }
@@ -28,8 +28,10 @@ public class ExcelFileWriter {
     public void write(Map<Integer, String[]> carsData) {
         try {
 
-            // setup cell-style for header cells
+            // setup custom width of columns
             spreadsheet.setDefaultColumnWidth(27);
+
+            // setup cell-style for header cells
             XSSFCellStyle style = workbook.createCellStyle();
             style.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
             style.setFillPattern(FillPatternType.FINE_DOTS);
@@ -60,7 +62,7 @@ public class ExcelFileWriter {
             }
 
             // writing parsed data into 'cars.xls' file
-            File currDir = new File(filepath);
+            File currDir = new File(filePath);
             String path = currDir.getAbsolutePath();
             String fileLocation = path + "\\cars.xls";
             FileOutputStream out = new FileOutputStream(fileLocation);
