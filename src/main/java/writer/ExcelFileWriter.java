@@ -1,61 +1,73 @@
 package writer;
 
-import jxl.Workbook;
-import jxl.write.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Map;
+import java.util.Set;
 
 public class ExcelFileWriter {
 
     private String filepath;
+    private XSSFWorkbook workbook;
+    private XSSFSheet spreadsheet;
 
     public ExcelFileWriter(String filepath) {
         this.filepath = filepath;
+        this.workbook = new XSSFWorkbook();
+        this.spreadsheet = workbook.createSheet("Лист 1");
     }
 
-    public void createExcelFile() {
+    public void write(Map<Integer, String[]> carsData) {
         try {
+
+            // setup cell-style for header cells
+            spreadsheet.setDefaultColumnWidth(27);
+            XSSFCellStyle style = workbook.createCellStyle();
+            style.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+            style.setFillPattern(FillPatternType.FINE_DOTS);
+
+            // fill header row
+            XSSFRow row = spreadsheet.createRow(0);
+            String[] header = { "Марка", "Год выпуска", "Тип топлива", "Тип КПП", "Локация", "Цена (руб.)", "URL" };
+            int headerCellCounter = 0;
+            for (String line : header) {
+                Cell cell = row.createCell(headerCellCounter++);
+                cell.setCellValue(line);
+                cell.setCellStyle(style);
+            }
+
+            // fill main rows
+            Set<Integer> keys = carsData.keySet();
+            int rowCounter = 1;
+            for (Integer key : keys) {
+
+                row = spreadsheet.createRow(rowCounter++);
+                String[] data = carsData.get(key);
+                int mainCellCounter = 0;
+
+                for (String line : data) {
+                    Cell cell = row.createCell(mainCellCounter++);
+                    cell.setCellValue(line);
+                }
+            }
+
+            // writing parsed data into 'cars.xls' file
             File currDir = new File(filepath);
             String path = currDir.getAbsolutePath();
             String fileLocation = path + "\\cars.xls";
+            FileOutputStream out = new FileOutputStream(fileLocation);
 
-            WritableWorkbook workbook = Workbook.createWorkbook(new File(fileLocation));
-            WritableSheet sheet = workbook.createSheet("Лист 1", 0);
+            workbook.write(out);
+            out.close();
 
-            WritableCellFormat headerFormat = new WritableCellFormat();
-            WritableFont font
-                    = new WritableFont(WritableFont.ARIAL, 16, WritableFont.BOLD);
-            headerFormat.setFont(font);
-            headerFormat.setBackground(Colour.LIGHT_BLUE);
-            headerFormat.setWrap(true);
-
-            workbook.write();
-
-            Label headerLabel = new Label(0, 0, "ID", headerFormat);
-            sheet.addCell(headerLabel);
-
-            headerLabel = new Label(1, 0, "Марка", headerFormat);
-            sheet.addCell(headerLabel);
-
-            headerLabel = new Label(2, 0, "Год выпуска", headerFormat);
-            sheet.addCell(headerLabel);
-
-            headerLabel = new Label(3, 0, "Тип топлива", headerFormat);
-            sheet.addCell(headerLabel);
-
-            headerLabel = new Label(4, 0, "Тип КПП", headerFormat);
-            sheet.addCell(headerLabel);
-
-            headerLabel = new Label(5, 0, "Локация продажи", headerFormat);
-            sheet.addCell(headerLabel);
-
-            headerLabel = new Label(6, 0, "Цена", headerFormat);
-            sheet.addCell(headerLabel);
-
-            headerLabel = new Label(7, 0, "URL", headerFormat);
-            sheet.addCell(headerLabel);
-
-            workbook.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
