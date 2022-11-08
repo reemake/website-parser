@@ -17,16 +17,18 @@ public class CarsDataParser {
 
     private static final Logger logger = LoggerFactory.getLogger(CarsDataParser.class);
     private ExcelFileWriter excelFileWriter;
+    private int numberOfPagesToParse;
 
-    public CarsDataParser(ExcelFileWriter excelFileWriter) {
+    public CarsDataParser(ExcelFileWriter excelFileWriter, int numberOfPagesToParse) {
         this.excelFileWriter = excelFileWriter;
+        this.numberOfPagesToParse = numberOfPagesToParse;
     }
 
     public void parse() {
 
         Map<Integer, String[]> carsData = new HashMap<>();
 
-        for (int page = 1, carCount = 1; page <= 3; page++) {
+        for (int page = 1, carCount = 1; page <= numberOfPagesToParse; page++) {
 
             try {
                 String url = (page == 1) ? "https://auto.drom.ru" : "https://auto.drom.ru/all/page" + page;
@@ -94,7 +96,6 @@ public class CarsDataParser {
             excelFileWriter.write(carsData);
             logger.info("Writing parsed data of page {} successfully finished", page);
         }
-        logger.info("Parsing process is finished!");
     }
 
 }
