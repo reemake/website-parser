@@ -7,6 +7,9 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import parser.CarsDataParser;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -15,6 +18,7 @@ import java.util.Set;
 
 public class ExcelFileWriter {
 
+    private static final Logger logger = LoggerFactory.getLogger(ExcelFileWriter.class);
     private String filePath;
     private XSSFWorkbook workbook;
     private XSSFSheet spreadsheet;
@@ -61,17 +65,20 @@ public class ExcelFileWriter {
                 }
             }
 
-            // writing parsed data into 'cars.xls' file
+            // saving parsed data into 'cars.xls' file
             File currDir = new File(filePath);
             String path = currDir.getAbsolutePath();
             String fileLocation = path + "\\cars.xls";
             FileOutputStream out = new FileOutputStream(fileLocation);
 
+            logger.info("Writing parsed data into a file with path {}", fileLocation);
+
             workbook.write(out);
             out.close();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Writing to file has been failed");
         }
+        logger.info("Writing to file successfully finished");
     }
 }
