@@ -34,13 +34,13 @@ public class CarsDataParser {
                 Elements cars = document.getElementsByClass("css-xb5nz8 ewrty961");
                 for (Element car : cars) {
 
-                    String[] nameAndYear = car
+                    String[] brandAndYear = car
                             .select("[data-ftid='bull_title']")
                             .text()
                             .split(",");
 
-                    String name = nameAndYear[0];
-                    String year = nameAndYear[1]
+                    String brand = brandAndYear[0];
+                    String year = brandAndYear[1]
                             .substring(1);      // deleting unnecessary 'space' at the beginning of string
 
                     String fuelType = car
@@ -69,7 +69,7 @@ public class CarsDataParser {
 
                     carsData.put(
                             carCount,
-                            new String[]{ name, year, fuelType, transmissionType, location, price, link });
+                            new String[]{ brand, year, fuelType, transmissionType, location, price, link });
 
                     carCount++;
                 }
